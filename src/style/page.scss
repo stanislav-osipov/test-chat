@@ -5,6 +5,7 @@ html, body, #page, .App, .chat, .content  {
 	height: 100%;
 	min-height: 500px;
 	overflow: hidden;
+	font-family: 'Open Sans', sans-serif;
 }
 
 .messages {
@@ -62,5 +63,29 @@ html, body, #page, .App, .chat, .content  {
 			background: #FF7;
 		}
 
+	}
+}
+
+.errors {
+	height: 100%;
+	width: 100%;
+	background: rgba(255, 0, 0, 0.15);
+	position: fixed;
+	z-index: -1;
+
+	&__text {
+		background: #FFF;
+		color: rgba(255, 0, 0, 0.3);
+		height: 120px;
+		width: 360px;
+		border-radius: 20px;
+		border-width: 4px;
+		border-style: solid;
+		border-color: rgba(255, 0, 0, 0.3);
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		margin-top: -60px;
+		margin-left: -180px;
 	}
 }

@@ -7,11 +7,37 @@ var serverPath = require('../app.jsx').serverPath;
 
 var CHANGE_EVENT = 'change';
 
+/*************************************
+ERRORS:
+	'short' - too short message (less than 2 characters),
+	'big' - too big message (more than 15 characters),
+	'time' -  one message per 2 sec allowed
+
+*************************************/
+var errors = ['short', 'big', 'time'];
+
 var messages = {};
 var socket = null;
+var lastMsgTime = 0;
+
+var smallMsgLength = 2;
+var longMsgLength = 15;
+var timeBetweenAllowed = 2000;
 
 function sendMessage(msg) {
-	socket.send(msg);
+	if (msg.trim().length < smallMsgLength) {
+		MainStore.emitError('short');
+		return;
+	} else if (msg.length > longMsgLength) {
+		MainStore.emitError('big');
+		return;
+	} else if ((+new Date() - lastMsgTime) < timeBetweenAllowed) {
+		MainStore.emitError('time');
+		return;
+	} else {
+		socket.send(msg);
+		lastMsgTime = +new Date();	
+	}
 };
 
 function receiveMessages() {
@@ -41,8 +67,8 @@ var MainStore = assign({}, EventEmitter.prototype, {
 		var dC2 = this.getRandomInt(4, 12).toString(16);
 		var dC3 = this.getRandomInt(4, 12).toString(16);
 
-		var dY = this.getRandomInt(0, document.documentElement.clientHeight * 0.8);
-      	var dX = this.getRandomInt(0, document.documentElement.clientWidth * 0.8);
+		var dY = this.getRandomInt(0, document.documentElement.clientHeight * 0.77);
+      	var dX = this.getRandomInt(0, document.documentElement.clientWidth * 0.92);
 
       	var dP = this.getRandomInt(10, 50);
 
@@ -65,6 +91,24 @@ var MainStore = assign({}, EventEmitter.prototype, {
 
 	removeChangeListener: function(callback) {
 	    this.removeListener(CHANGE_EVENT, callback);
+	},
+
+	emitError: function(err) {
+		this.emit(err, err);
+	},
+
+	addErrorListener: function(callback) {
+		var self = this;
+		errors.map(function(err, key) {
+			self.on(err, callback);
+		});		
+	},
+
+	removeErrorListener: function(callback) {
+		var self = this;
+		errors.map(function(err, key) {
+			self.removeListener(err, callback);
+		}); 
 	}
 });
 
