@@ -47,6 +47,12 @@ var MainPage = React.createClass({
   },
 
   showError: function(errMsg) {
+    this.setState({
+      errText: errMsg,
+      errStyle: {zIndex: 999}
+    });    
+
+    window.setTimeout(function(){this.setState({ errStyle: {zIndex: -1} })}.bind(this), 1500);
 
   },
 
